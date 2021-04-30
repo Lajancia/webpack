@@ -48,7 +48,7 @@ overrides는 컨테이너가 모듈을 노출하는 것과 유사한 방법으�
 1. 로딩(비동기)
 2. 평가(비동기)
 
-> 주의: 중첩이 사용될 떄, 하나의 컨테이너에 oveerides를 제공하는 것은 자동적으로 중첩된 컨테이너의 같은 이름을 가진 모듈을 override한다.
+> 주의: 중첩이 사용될 떄, 하나의 컨테이너에 overrides를 제공하는 것은 자동적으로 중첩된 컨테이너의 같은 이름을 가진 모듈을 override한다.
 
 > overrides는 반드시 컨테이너의 모듈들이 로드되기 전에 제공되어야 한다. 초기의 청크에서 이용된 overridables는 오로지 promise를 사용하지 않은 동기식 모듈 override로부터 overriden 될 수 있다. 한번 평가된 이후에는 더 이상 overridable(재정의) 할 수 없다.
 
@@ -116,3 +116,82 @@ __webpack_override__({
 ### **ModuleFederationPlugin(High Level)**
 
 이 플러그인은 ContainerPlugin 과 ContainerReferencePlugin을 결합한다. overrides와 overridables는 지정된 공유 모듈(shared modules)의 단일 리스트로 결합된다.
+
+</br>
+
+## **개념 목표**
+
+- 웹팩이 지원하는 모든 모듈 타입을 나타내고 사용 가능해야 한다.
+- 청크 로딩은 동일선상의 모든 필요한 것들을 로드해야 한다.
+- 소비자에서 컨테이너로의 제어
+  - 모듈 오버라이딩은 단방향 작업이다.
+  - 자매 컨테이너들은 서로의 모듈을 오버라이드 할 수 없다.
+- 독립적인 환경이어야 한다.
+  - web, node.js, etc에서 사용 가능해야 한다.
+- 공유된 모듈 리퀘스트
+
+  - 사용될 경우에만 제공된다.
+  - 빌드에서 사용되는 모든 동일한 모듈 요청과 일치한다.
+  - 일치되는 모든 모듈을 제공한다.
+  - requiredVersion을 package.json으로부터 추출한다.
+  - node_modules를 중첩시킬 경우, 다양한 버전을 제공하고 사용할 수 있다.
+
+- /를 포함하는 공유된 모듈 요청은 모든 모듈 요청을 이 접두사와 일치시킨다.
+
+</br>
+
+## **사용 사례**
+
+**페이지별 별도의 빌드**
+
+SPA(Single Page Application의 각 페이지는 별도의 빌드에 있는 컨테이너 빌드에서 노출된다. 또한 어플리케이션 셀은 모든 페이지를 remote 모듈로 참조하는 별도의 빌드이다. 이렇게 하면 각 페이지를 개별적으로 배포할 수 있다. routes기 업데이트 되거나 새로운 경로가 추가될 때 어플리케이션 셸이 배포된다..애플리케이션 셸은 일반적으로 사용되는 라이브러리를 공유 모듈로 정의하여 페이지 빌드에서 라이브러리 중복을 방지한다.
+
+**컨테이너와 같은 컴포넌트 라이브러리**
+
+많은 어플리케이션들이 각 구성요소가 노출된 컨테이너로 빌드될 수 있는 공통 컴포넌트 라이브러리를 공유한다. 각각의 어플리케이션은 컴포넌트 라이브러리 컨테이너에서 컴포넌트를 소비한다. 컴포넌트 라이브러리의 변경은 모든 어플리케이션을 다시 배포할 필요 없이 별도로 배포가 가능하다. 어플리케이션은 자동적으로 최신 버전의 컴포넌트 라이브러리를 사용한다.
+
+</br>
+
+## **동적 remote 컨테이너(dynamic remote containers)**
+
+컨테이너 인터페이스는 get와 init 메소드를 제공한다. init는 하나의 인수로 호출되는 비동기 호환 메소드이다 (공유 범위 객체). 이 객체는 remote 컨테이너에서 공유 범위로 사용되며, 호스트에서 제공되는 모듈들로 채워진다. remote 컨테이너를 런타임에 호스트 컨테이너에 동적으로 연결하는 것에 영향을 줄 수 있다.
+
+**init.js**
+
+```javascript
+(async () => {
+  // Initializes the shared scope. Fills it with known provided modules from this build and all remotes
+  await __webpack_init_sharing__("default");
+  const container = window.someContainer; // or get the container somewhere else
+  // Initialize the container, it may provide shared modules
+  await container.init(__webpack_share_scopes__.default);
+  const module = await container.get("./module");
+})();
+```
+
+컨테이너는 공유된 모듈을 제공하려 한다. 하지만 이미 공유된 모듈이 사용중이라면, 경고 및 공유된 모듈 제공은 무시된다. 컨테이너는 여전히 fallback으로 사용할 수 있다.
+
+이 방식으로 다양한 버전을 제공하는 공유 모듈을 제공하는 A/B 테스트를 동적으로 로드할 수 있다.
+
+> 팁: 원격 컨테이너를 동적으로 연결하기 전에 컨테이너를 로드했는지 확인한다.
+
+</br>
+
+**example) init.js**
+
+```javascript
+function loadComponent(scope, module) {
+  return async () => {
+    // Initializes the shared scope. Fills it with known provided modules from this build and all remotes
+    await __webpack_init_sharing__("default");
+    const container = window[scope]; // or get the container somewhere else
+    // Initialize the container, it may provide shared modules
+    await container.init(__webpack_share_scopes__.default);
+    const factory = await window[scope].get(module);
+    const Module = factory();
+    return Module;
+  };
+}
+
+loadComponent("abtests", "test123");
+```
