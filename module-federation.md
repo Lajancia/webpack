@@ -16,9 +16,15 @@
 
 local 모듈과 remote 모듈로 나눈다. 로컬 모듈은 일반적인 모듈들로 기존의 빌드의 일부분을 말한다. remote 모듈은 기존의 빌드 일부분이 아닌, 흔히 말하는 컨테이너에서 런타임 내에 불러오는 모듈을 말한다.
 
-remote 모듈을 로딩하는 것은 비동기 동작으로 취급된다. remote모듈을 사용할 때 이러한 비동기 작업은 remote 모듈과 진입점 사이에 있는 다음 청크 로드 작업에 배치됩니다. 청크 로딩 작업 없이는 remote 모듈 사용이 불가능하다
+remote 모듈을 로딩하는 것은 비동기 동작으로 취급된다. remote모듈을 사용할 때 이러한 비동기 작업은 remote 모듈과 진입점 사이에 있는 다음 청크 로드 작업에 배치됩니다. `청크` 로딩 작업 없이는 remote 모듈 사용이 불가능하다
 
 일반적으로 청크 로딩 작업은 import()를 통해서 부를 수 있지만, 조금 더 구 버전 개발에서 사용되는 require.ensure이나 requre([......])또한 제공된다.
+
+</br>
+
+**청크(chunk)란?**
+
+> 이 웹 팩 관련 용어는 내부적으로 번들 프로세스를 관리하는 데 사용된다. 번들은 청크로 구성되며, 그 중 몇 가지 유형(예: 엔트리 및 하위 자식)이 있습니다. 일반적으로 청크는 출력 번들과 직접 일치하지만 일대일 관계를 제공하지 않는 구성도 있다.
 
 </br>
 
@@ -35,13 +41,13 @@ remote 모듈을 로딩하는 것은 비동기 동작으로 취급된다. remote
 
 ### **Overriding**
 
-컨테이너는 선택된 local 모듈에 “overridable”로 플래그를 지정할 수 있다. 컨테이너의 이용자는 “overrides”를 제공하는 것이 가능한데, 이것은 컨테이너의 overridable 모듈들 중 하나를 대신한다. 모든 컨테이너의 모듈들은 소비자가 모듈을 제공할 때, local 모듈을 사용하는 것 대신, 대체된 모듈(overrides된)을 사용한다. 소비자가 대체된 모듈을 제공하지 않을 시에는, 컨테이너에 있는 모든 모듈이 local에 있는 것을 사용한다.
+컨테이너는 선택된 local 모듈에 `overridable`로 플래그를 지정할 수 있다. 컨테이너의 이용자는 “overrides”를 제공하는 것이 가능한데, 이것은 컨테이너의 overridable 모듈들 중 하나를 대신한다. 모든 컨테이너의 모듈들은 소비자가 모듈을 제공할 때, local 모듈을 사용하는 것 대신, 대체된 모듈(overrides된)을 사용한다. 소비자가 대체된 모듈을 제공하지 않을 시에는, 컨테이너에 있는 모든 모듈이 local에 있는 것을 사용한다.
 
-컨테이너는 소비자로 인해 override된 모듈들을 다운할 필요가 없는 방식으로 overridable 모듈을 관리한다. 이는 일반적으로 별개의 청크에 모듈을 배치시킬 때 발생한다.
+컨테이너는 소비자로 인해 `override`된 모듈들을 다운할 필요가 없는 방식으로 overridable 모듈을 관리한다. 이는 일반적으로 별개의 청크에 모듈을 배치시킬 때 발생한다.
 
 다른 한편으로는, 대체 모듈 공급자는 비동기 로딩 함수만을 제공한다. 이것은 모듈이 꼭 필요할 때만 컨테이너가 대체 모듈을 로드할 수 있도록 허락한다. 공급자는 컨테이너의 요청이 없을 경우 다운로드가 되지 않도록 하는 방식으로 대체 모듈을 관리한다. 이는 일반적으로 별개의 청크에 모듈을 배치할 때 발생한다.
 
-“name”은 컨테이너로부터 overridable 모듈들을 구별하기 위해 사용된다.
+`name`은 컨테이너로부터 overridable 모듈들을 구별하기 위해 사용된다.
 
 overrides는 컨테이너가 모듈을 노출하는 것과 유사한 방법으로 제공된다. 두 단계로 나눠진다.
 
@@ -128,7 +134,7 @@ __webpack_override__({
   - 자매 컨테이너들은 서로의 모듈을 오버라이드 할 수 없다.
 - 독립적인 환경이어야 한다.
   - web, node.js, etc에서 사용 가능해야 한다.
-- 공유시된 상대적(Relative) 요청과 절대적(Absolute) 요청
+- 공유된 상대적(Relative) 요청과 절대적(Absolute) 요청
 
   - 사용되지 않을 경우에도 제공된다.
   - config.context 관련 문제를 해결
@@ -158,7 +164,7 @@ SPA(Single Page Application의 각 페이지는 별도의 빌드에 있는 컨�
 
 </br>
 
-## **동적 remote 컨테이너(dynamic remote containers)**
+## **Dynamic remote containers**
 
 컨테이너 인터페이스는 get와 init 메소드를 제공한다. init는 하나의 인수로 호출되는 비동기 호환 메소드이다 (공유 범위 객체). 이 객체는 remote 컨테이너에서 공유 범위로 사용되며, 호스트에서 제공되는 모듈들로 채워진다. remote 컨테이너를 런타임에 호스트 컨테이너에 동적으로 연결하는 것에 영향을 줄 수 있다.
 
@@ -183,7 +189,7 @@ SPA(Single Page Application의 각 페이지는 별도의 빌드에 있는 컨�
 
 </br>
 
-**example) init.js**
+**example: init.js**
 
 ```javascript
 function loadComponent(scope, module) {
@@ -201,3 +207,11 @@ function loadComponent(scope, module) {
 
 loadComponent("abtests", "test123");
 ```
+
+</br>
+
+## **참고자료**
+
+> [Module Federation 원문](https://webpack.js.org/concepts/module-federation/)
+
+> [Module Federation gitjub](https://github.com/module-federation/module-federation-examples)
