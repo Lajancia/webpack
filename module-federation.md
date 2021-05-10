@@ -1,5 +1,9 @@
 # **Module Federation**
 
+**[Webpack Module Federation 원문 번역](https://webpack.js.org/concepts/module-federation/) : 황수민**
+
+</br>
+
 ## **모듈 페더레이션(Module Federation)이란?**
 
 모듈 페더레이션(Module Federation)은 자바스크립트 응용프로그램이 런타임에 다른 응용프로그램에서 동적으로 코드를 가져올 수 있도록 허용한다.
@@ -128,7 +132,7 @@ __webpack_override__({
 ## **개념 목표**
 
 - 웹팩이 지원하는 모든 모듈 타입을 나타내고 사용 가능해야 한다.
-- 청크 로딩은 동일선상의 모든 필요한 것들을 로드해야 한다.(예. 웹: 서버로의 단일 왕복)
+- 청크 로딩은 동일선상의 필요한 모든 것들을 로드해야 한다.(예. 웹: 서버로의 단일 왕복)
 - Consumer에서 컨테이너로의 제어
   - 모듈 오버라이딩은 단방향 동작이다.
   - 자매 컨테이너들은 서로의 모듈을 오버라이드 할 수 없다.
@@ -156,7 +160,7 @@ __webpack_override__({
 
 **페이지별 별도의 빌드**
 
-SPA(Single Page Application의 각 페이지는 별도의 빌드에 있는 컨테이너 빌드에서 노출된다. 또한 어플리케이션 셀은 모든 페이지를 remote 모듈로 참조하는 별도의 빌드이다. 이렇게 하면 각 페이지를 개별적으로 배포할 수 있다. routes기 업데이트 되거나 새로운 경로가 추가될 때 어플리케이션 셸이 배포된다..애플리케이션 셸은 일반적으로 사용되는 라이브러리를 공유 모듈로 정의하여 페이지 빌드에서 라이브러리 중복을 방지한다.
+SPA(Single Page Application)의 각 페이지는 별도의 빌드에 있는 컨테이너 빌드에서 노출된다. 또한 어플리케이션 셀은 모든 페이지를 remote 모듈로 참조하는 별도의 빌드이다. 이렇게 하면 각 페이지를 개별적으로 배포할 수 있다. routes기 업데이트 되거나 새로운 경로가 추가될 때 어플리케이션 셸이 배포된다. 애플리케이션 셸은 일반적으로 사용되는 라이브러리를 공유 모듈로 정의하여 페이지 빌드에서 라이브러리 중복을 방지한다.
 
 **컨테이너와 같은 컴포넌트 라이브러리**
 
@@ -301,4 +305,4 @@ remote 컨테이너가 없어서 발생한 에러일 가능성이 크다. 따라
 
 > [Module Federation 원문](https://webpack.js.org/concepts/module-federation/)
 
-> [Module Federation gitjub](https://github.com/module-federation/module-federation-examples)
+> [Module Federation 예제 github](https://github.com/module-federation/module-federation-examples)
