@@ -1,6 +1,6 @@
 # **Module Federation**
 
-**[Webpack Module Federation 원문 번역](https://webpack.js.org/concepts/module-federation/) : 황수민, 정주현**
+**[Webpack Module Federation 원문 번역](https://webpack.js.org/concepts/module-federation/) : 한국외국어대학교 - 황수민, 정주현**
 
 </br>
 
