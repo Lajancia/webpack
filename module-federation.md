@@ -1,6 +1,6 @@
 # **Module Federation**
 
-**[Webpack Module Federation 원문 번역](https://webpack.js.org/concepts/module-federation/) : 황수민**
+**[Webpack Module Federation 원문 번역](https://webpack.js.org/concepts/module-federation/) : 황수민, 정주현**
 
 </br>
 
@@ -14,7 +14,7 @@
 
 여러개로 분리되어있는 개별 빌드들이 하나의 어플리케이션 형태를 만들어내야 한다. 이러한 분리된 빌드들은 서로에게 의존하지 않아, 각 부분별로 독자적인 개발과 배치를 가능하게 한다.
 
-흔히 마이크로 프론트엔드라 알려져 있지만 이것 하나에만 국한되지는 않는다.
+흔히 Micro-frontend라 알려져 있지만 이것 하나에만 국한되지는 않는다.
 
 ## **Low Level Concepts**
 
